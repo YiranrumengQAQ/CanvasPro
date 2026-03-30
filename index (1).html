@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能水印大师 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 50%, #FFF8DC 100%);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 背景装饰 */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 193, 7, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            z-index: 0;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 152, 0, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -150px;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, 30px) scale(1.1); }
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 顶部导航栏 */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 25px;
+            padding: 20px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(255, 193, 7, 0.15),
+                        0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #F57C00 0%, #FFA726 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: #999;
+            letter-spacing: 2px;
+        }
+
+        /* 主工作区 */
+        .workspace {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* 左侧控制面板 */
+        .control-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(255, 193, 7, 0.15),
+                        0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .control-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .control-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 10px;
+        }
+
+        .control-sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #FFD54F 0%, #FFC107 100%);
+            border-radius: 10px;
+        }
+
+        /* 控制区块 */
+        .control-section {
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 193, 7, 0.2);
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #FFF9C4 0%, #FFE082 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .section-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 表单控件 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .value-badge {
+            background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 193, 7, 0.2);
+            border-radius: 15px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #333;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #FFC107;
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 50px;
+            border: 2px solid rgba(255, 193, 7, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            background: white;
+            padding: 5px;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 10px;
+        }
+
+        /* 滑块 */
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #FFF9C4 0%, #FFD54F 50%, #FFC107 100%);
+            outline: none;
+            -webkit-appearance: none;
+            margin: 15px 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4),
+                        0 0 0 4px rgba(255, 193, 7, 0.1);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 16px rgba(255, 193, 7, 0.5),
+                        0 0 0 6px rgba(255, 193, 7, 0.15);
+        }
+
+        /* 坐标输入组 */
+        .coord-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* 按钮组 */
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid rgba(255, 193, 7, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: #FFC107;
+        }
+
+        /* 大按钮 */
+        .btn-large {
+            width: 100%;
+            padding: 18px;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        /* 复选框 */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #FFC107;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            user-select: none;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 右侧画布区域 */
+        .canvas-area {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(255, 193, 7, 0.15),
+                        0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            min-height: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 上传区域 */
+        .upload-zone {
+            width: 100%;
+            max-width: 600px;
+            padding: 80px 40px;
+            border: 3px dashed rgba(255, 193, 7, 0.4);
+            border-radius: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, rgba(255, 249, 228, 0.5) 0%, rgba(255, 245, 220, 0.5) 100%);
+        }
+
+        .upload-zone:hover {
+            border-color: #FFC107;
+            background: linear-gradient(135deg, rgba(255, 249, 228, 0.8) 0%, rgba(255, 245, 220, 0.8) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 10px 40px rgba(255, 193, 7, 0.2);
+        }
+
+        .upload-zone.dragover {
+            border-color: #FF9800;
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);
+            transform: scale(1.05);
+        }
+
+        .upload-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #F57C00;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* 画布包装器 */
+        .canvas-wrapper {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        #canvas {
+            max-width: 100%;
+            max-height: calc(100vh - 200px);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            cursor: default;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* 拖动指示框 */
+        .drag-box {
+            position: absolute;
+            border: 2px dashed #FFC107;
+            border-radius: 8px;
+            cursor: move;
+            pointer-events: all;
+            display: none;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+            transition: border-color 0.2s;
+            background: transparent;
+        }
+
+        .drag-box.active {
+            display: block;
+        }
+
+        .drag-box:hover {
+            border-color: #FF9800;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.5);
+        }
+
+        .drag-box.dragging {
+            border-color: #FF9800;
+            box-shadow: 0 6px 16px rgba(255, 152, 0, 0.6);
+            cursor: grabbing;
+        }
+
+        /* 提示卡片 */
+        .tip-card {
+            background: linear-gradient(135deg, #FFF9C4 0%, #FFE082 100%);
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #FFC107;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+        }
+
+        .tip-icon {
+            font-size: 24px;
+        }
+
+        .tip-text {
+            font-size: 13px;
+            color: #F57C00;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .control-sidebar {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 15px 10px;
+            }
+
+            .top-bar {
+                padding: 15px 20px;
+                border-radius: 20px;
+            }
+
+            .logo-text h1 {
+                font-size: 18px;
+            }
+
+            .canvas-area {
+                padding: 20px;
+            }
+
+            .upload-zone {
+                padding: 60px 20px;
+            }
+        }
+
+        /* 隐藏文件输入 */
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部栏 -->
+        <div class="top-bar">
+            <div class="logo">
+                <div class="logo-icon">✨</div>
+                <div class="logo-text">
+                    <h1>智能水印大师</h1>
+                    <p>WATERMARK PRO 2025</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主工作区 -->
+        <div class="workspace">
+            <!-- 左侧控制面板 -->
+            <div class="control-sidebar">
+                <div class="tip-card">
+                    <span class="tip-icon">💡</span>
+                    <span class="tip-text">点击水印显示框，拖动框移动位置</span>
+                </div>
+
+                <!-- 图片上传 -->
+                <div class="control-section">
+                    <div class="section-header">
+                        <div class="section-icon">📁</div>
+                        <h3>图片管理</h3>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="document.getElementById('fileInput').click()">
+                        📤 选择图片
+                    </button>
+                    <input type="file" id="fileInput" accept="image/*">
+                </div>
+
+                <!-- 水印内容 -->
+                <div class="control-section">
+                    <div class="section-header">
+                        <div class="section-icon">✏️</div>
+                        <h3>水印内容</h3>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="watermarkText" placeholder="输入水印文字">
+                    </div>
+                    <div class="button-row">
+                        <button class="btn btn-secondary" onclick="setCurrentTime()">⏰ 当前时间</button>
+                        <button class="btn btn-secondary" onclick="setCurrentDate()">📅 日期</button>
+                    </div>
+                </div>
+
+                <!-- 位置设置 -->
+                <div class="control-section">
+                    <div class="section-header">
+                        <div class="section-icon">📍</div>
+                        <h3>位置设置</h3>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-label">
+                            <span>精确坐标</span>
+                        </div>
+                        <div class="coord-group">
+                            <input type="number" id="posX" placeholder="X坐标" value="0" step="1">
+                            <input type="number" id="posY" placeholder="Y坐标" value="0" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 样式设置 -->
+                <div class="control-section">
+                    <div class="section-header">
+                        <div class="section-icon">🎨</div>
+                        <h3>样式设置</h3>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-label">
+                            <span>字体大小</span>
+                            <span class="value-badge" id="sizeDisplay">16</span>
+                        </div>
+                        <input type="range" id="fontSize" min="10" max="150" value="16">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-label">
+                            <span>透明度</span>
+                            <span class="value-badge" id="opacityDisplay">80%</span>
+                        </div>
+                        <input type="range" id="opacity" min="0" max="100" value="80">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-label">
+                            <span>旋转角度</span>
+                            <span class="value-badge" id="rotateDisplay">0°</span>
+                        </div>
+                        <input type="range" id="rotationSlider" min="-180" max="180" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-label">
+                            <span>文字颜色</span>
+                        </div>
+                        <input type="color" id="textColor" value="#ffffff">
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="boldText">
+                        <label for="boldText">粗体</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="shadowEffect" checked>
+                        <label for="shadowEffect">阴影效果</label>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="control-section">
+                    <div class="section-header">
+                        <div class="section-icon">⚡</div>
+                        <h3>导出操作</h3>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="downloadImage()">
+                        💾 下载图片
+                    </button>
+                    <button class="btn btn-secondary btn-large" onclick="resetSettings()">
+                        🔄 重置设置
+                    </button>
+                </div>
+            </div>
+
+            <!-- 右侧画布区域 -->
+            <div class="canvas-area" id="canvasArea">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">点击或拖拽上传图片</div>
+                    <div class="upload-hint">支持 JPG、PNG、WEBP、GIF 格式</div>
+                </div>
+                <div class="canvas-wrapper" id="canvasWrapper" style="display: none;">
+                    <canvas id="canvas"></canvas>
+                    <div class="drag-box" id="dragBox"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 主要功能 ====================
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const uploadZone = document.getElementById('uploadZone');
+        const canvasWrapper = document.getElementById('canvasWrapper');
+        const dragBox = document.getElementById('dragBox');
+        const fileInput = document.getElementById('fileInput');
+        const posXInput = document.getElementById('posX');
+        const posYInput = document.getElementById('posY');
+
+        let currentImage = null;
+        let originalImageType = 'image/png'; // 记录原始图片格式
+        let watermark = {
+            x: 0,
+            y: 0,
+            rotation: 0,
+            fontSize: 16,
+            text: ''
+        };
+
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragStartWmX = 0;
+        let dragStartWmY = 0;
+
+        // 初始化
+        function init() {
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}年${String(now.getMonth()+1).padStart(2,'0')}月${String(now.getDate()).padStart(2,'0')}日 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            document.getElementById('watermarkText').value = timeStr;
+            watermark.text = timeStr;
+
+            // 文件上传
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadZone.addEventListener('click', () => fileInput.click());
+
+            // 拖放上传
+            uploadZone.addEventListener('dragover', e => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', e => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    loadImage(file);
+                }
+            });
+
+            // 画布点击显示拖动框 - 优化版
+            canvas.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleCanvasClick(e);
+            });
+
+            // 拖动框事件
+            dragBox.addEventListener('mousedown', handleDragStart);
+            document.addEventListener('mousemove', handleDragMove);
+            document.addEventListener('mouseup', handleDragEnd);
+
+            // 触摸事件
+            dragBox.addEventListener('touchstart', handleTouchStart);
+            document.addEventListener('touchmove', handleTouchMove);
+            document.addEventListener('touchend', handleDragEnd);
+
+            // 坐标输入事件
+            posXInput.addEventListener('input', handleCoordInput);
+            posYInput.addEventListener('input', handleCoordInput);
+
+            // 控件变化
+            ['watermarkText', 'fontSize', 'opacity', 'textColor', 'boldText', 'shadowEffect', 'rotationSlider'].forEach(id => {
+                const el = document.getElementById(id);
+                el.addEventListener('input', updateWatermark);
+                el.addEventListener('change', updateWatermark);
+            });
+
+            // 点击其他地方隐藏拖动框
+            document.addEventListener('click', e => {
+                if (!canvas.contains(e.target) && !dragBox.contains(e.target) && !e.target.closest('.control-sidebar')) {
+                    dragBox.classList.remove('active');
+                }
+            });
+        }
+
+        // 坐标输入处理
+        function handleCoordInput() {
+            if (!currentImage) return;
+
+            const x = parseInt(posXInput.value) || 0;
+            const y = parseInt(posYInput.value) || 0;
+
+            // 限制在画布内
+            watermark.x = Math.max(0, Math.min(canvas.width, x));
+            watermark.y = Math.max(0, Math.min(canvas.height, y));
+
+            // 同步回输入框
+            posXInput.value = Math.round(watermark.x);
+            posYInput.value = Math.round(watermark.y);
+
+            updateWatermark();
+            if (dragBox.classList.contains('active')) {
+                updateDragBox();
+            }
+        }
+
+        // 文件选择
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) loadImage(file);
+        }
+
+        // 加载图片
+        function loadImage(file) {
+            // 记录原始图片格式
+            originalImageType = file.type || 'image/png';
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    currentImage = img;
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+
+                    // 根据图片大小自动设置字体
+                    const autoSize = Math.max(14, Math.floor(img.height / 50));
+                    document.getElementById('fontSize').value = autoSize;
+                    watermark.fontSize = autoSize;
+
+                    // 默认位置：图片中间底部
+                    watermark.x = Math.floor(img.width * 0.5);
+                    watermark.y = Math.floor(img.height * 0.95);
+                    watermark.rotation = 0;
+
+                    // 更新坐标输入框
+                    posXInput.value = Math.round(watermark.x);
+                    posYInput.value = Math.round(watermark.y);
+
+                    // 显示画布
+                    uploadZone.style.display = 'none';
+                    canvasWrapper.style.display = 'inline-block';
+
+                    updateWatermark();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 画布点击 - 优化版，防止触发默认行为
+        function handleCanvasClick(e) {
+            if (!currentImage) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
+
+            // 检测是否点击在水印附近
+            const dx = mouseX - watermark.x;
+            const dy = mouseY - watermark.y;
+
+            // 逆旋转计算
+            const cos = Math.cos(-watermark.rotation);
+            const sin = Math.sin(-watermark.rotation);
+            const rotatedX = dx * cos - dy * sin;
+            const rotatedY = dx * sin + dy * cos;
+
+            ctx.font = `${document.getElementById('boldText').checked ? 'bold' : 'normal'} ${watermark.fontSize}px Microsoft YaHei`;
+            const metrics = ctx.measureText(watermark.text);
+            const textWidth = metrics.width / 2;
+            const textHeight = watermark.fontSize * 0.6;
+
+            if (Math.abs(rotatedX) < textWidth + 20 && Math.abs(rotatedY) < textHeight + 10) {
+                dragBox.classList.add('active');
+                updateDragBox();
+            }
+        }
+
+        // 更新水印
+        function updateWatermark() {
+            if (!currentImage) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(currentImage, 0, 0);
+
+            const text = document.getElementById('watermarkText').value;
+            if (!text) return;
+
+            const fontSize = parseInt(document.getElementById('fontSize').value);
+            const opacity = parseInt(document.getElementById('opacity').value) / 100;
+            const color = document.getElementById('textColor').value;
+            const bold = document.getElementById('boldText').checked;
+            const shadow = document.getElementById('shadowEffect').checked;
+            const rotation = parseInt(document.getElementById('rotationSlider').value);
+
+            watermark.text = text;
+            watermark.fontSize = fontSize;
+            watermark.rotation = rotation * Math.PI / 180;
+
+            // 更新显示
+            document.getElementById('sizeDisplay').textContent = fontSize;
+            document.getElementById('opacityDisplay').textContent = Math.round(opacity * 100) + '%';
+            document.getElementById('rotateDisplay').textContent = rotation + '°';
+
+            // 更新坐标输入框（如果不是从输入框触发的）
+            if (document.activeElement !== posXInput && document.activeElement !== posYInput) {
+                posXInput.value = Math.round(watermark.x);
+                posYInput.value = Math.round(watermark.y);
+            }
+
+            // 绘制水印
+            ctx.save();
+            ctx.translate(watermark.x, watermark.y);
+            ctx.rotate(watermark.rotation);
+
+            ctx.globalAlpha = opacity;
+            ctx.font = `${bold ? 'bold' : 'normal'} ${fontSize}px Microsoft YaHei`;
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            if (shadow) {
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+            }
+
+            ctx.fillText(text, 0, 0);
+            ctx.restore();
+
+            if (dragBox.classList.contains('active')) {
+                updateDragBox();
+            }
+        }
+
+        // 更新拖动框
+        function updateDragBox() {
+            if (!currentImage) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = rect.width / canvas.width;
+            const scaleY = rect.height / canvas.height;
+
+            // 计算文本尺寸
+            ctx.font = `${document.getElementById('boldText').checked ? 'bold' : 'normal'} ${watermark.fontSize}px Microsoft YaHei`;
+            const metrics = ctx.measureText(watermark.text);
+            const textWidth = metrics.width;
+            const textHeight = watermark.fontSize * 1.2;
+
+            // 考虑旋转后的边界框
+            const cos = Math.abs(Math.cos(watermark.rotation));
+            const sin = Math.abs(Math.sin(watermark.rotation));
+            const boxWidth = textWidth * cos + textHeight * sin;
+            const boxHeight = textWidth * sin + textHeight * cos;
+
+            // 紧贴水印
+            const padding = 8;
+            const finalWidth = (boxWidth + padding) * scaleX;
+            const finalHeight = (boxHeight + padding) * scaleY;
+
+            const left = watermark.x * scaleX - finalWidth / 2;
+            const top = watermark.y * scaleY - finalHeight / 2;
+
+            dragBox.style.left = left + 'px';
+            dragBox.style.top = top + 'px';
+            dragBox.style.width = finalWidth + 'px';
+            dragBox.style.height = finalHeight + 'px';
+        }
+
+        // 拖动开始
+        function handleDragStart(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            isDragging = true;
+
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            dragStartWmX = watermark.x;
+            dragStartWmY = watermark.y;
+
+            dragBox.classList.add('dragging');
+        }
+
+        // 拖动中
+        function handleDragMove(e) {
+            if (!isDragging) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const dx = (e.clientX - dragStartX) * scaleX;
+            const dy = (e.clientY - dragStartY) * scaleY;
+
+            // 限制在画布内
+            watermark.x = Math.max(0, Math.min(canvas.width, dragStartWmX + dx));
+            watermark.y = Math.max(0, Math.min(canvas.height, dragStartWmY + dy));
+
+            // 更新坐标输入框
+            posXInput.value = Math.round(watermark.x);
+            posYInput.value = Math.round(watermark.y);
+
+            updateWatermark();
+        }
+
+        // 拖动结束
+        function handleDragEnd() {
+            if (isDragging) {
+                isDragging = false;
+                dragBox.classList.remove('dragging');
+            }
+        }
+
+        // 触摸事件
+        function handleTouchStart(e) {
+            const touch = e.touches[0];
+            handleDragStart({ 
+                clientX: touch.clientX, 
+                clientY: touch.clientY, 
+                preventDefault: () => e.preventDefault(),
+                stopPropagation: () => e.stopPropagation()
+            });
+        }
+
+        function handleTouchMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            handleDragMove({ clientX: touch.clientX, clientY: touch.clientY });
+        }
+
+        // 设置当前时间
+        function setCurrentTime() {
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}年${String(now.getMonth()+1).padStart(2,'0')}月${String(now.getDate()).padStart(2,'0')}日 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            document.getElementById('watermarkText').value = timeStr;
+            updateWatermark();
+        }
+
+        // 设置当前日期
+        function setCurrentDate() {
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}年${String(now.getMonth()+1).padStart(2,'0')}月${String(now.getDate()).padStart(2,'0')}日`;
+            document.getElementById('watermarkText').value = dateStr;
+            updateWatermark();
+        }
+
+        // 下载图片
+        function downloadImage() {
+            if (!currentImage) {
+                alert('请先上传图片！');
+                return;
+            }
+
+            // 根据原始图片格式选择导出格式和质量
+            let mimeType = originalImageType;
+            let quality = 0.92; // JPEG质量，0-1之间
+            let extension = 'png';
+
+            if (mimeType === 'image/jpeg' || mimeType === 'image/jpg') {
+                mimeType = 'image/jpeg';
+                extension = 'jpg';
+            } else if (mimeType === 'image/webp') {
+                extension = 'webp';
+            } else {
+                // PNG或其他格式，使用PNG
+                mimeType = 'image/png';
+                quality = 1.0;
+            }
+
+            const link = document.createElement('a');
+            link.download = `watermark_${Date.now()}.${extension}`;
+            link.href = canvas.toDataURL(mimeType, quality);
+            link.click();
+        }
+
+        // 重置设置
+        function resetSettings() {
+            if (!currentImage) return;
+
+            if (confirm('确定要重置所有设置吗？')) {
+                setCurrentTime();
+                const autoSize = Math.max(14, Math.floor(canvas.height / 50));
+                document.getElementById('fontSize').value = autoSize;
+                document.getElementById('opacity').value = 80;
+                document.getElementById('rotationSlider').value = 0;
+                document.getElementById('textColor').value = '#ffffff';
+                document.getElementById('boldText').checked = false;
+                document.getElementById('shadowEffect').checked = true;
+                watermark.x = Math.floor(canvas.width * 0.5);
+                watermark.y = Math.floor(canvas.height * 0.95);
+                watermark.rotation = 0;
+                posXInput.value = Math.round(watermark.x);
+                posYInput.value = Math.round(watermark.y);
+                updateWatermark();
+            }
+        }
+
+        // 初始化
+        init();
+    </script>
+</body>
+</html>
